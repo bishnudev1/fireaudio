@@ -1,6 +1,7 @@
+import 'dart:developer';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
 import '../models/audio_model.dart';
 
 class AudioScreen extends StatefulWidget {
@@ -12,46 +13,90 @@ class AudioScreen extends StatefulWidget {
 
 class _AudioScreenState extends State<AudioScreen> {
 
+  late AudioPlayer _player;
+  
+  @override
+  void initState() {
+    super.initState();
+    _player = AudioPlayer();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   final firestore = FirebaseFirestore.instance
-    .collection('Fire-Audio')
-    .doc('Eb8CqCMmjTrOqWk9Zn17')
-    .snapshots();
-
-  //List<String> items = ["Hello","Hi","Greet","Namaste"];
+      .collection('Fire-Audio')
+      .doc('Eb8CqCMmjTrOqWk9Zn17')
+      .snapshots();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height,
-      width: double.infinity,
-      child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: firestore,
-        builder: (BuildContext context,
-            AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error'),
-            );
-          } else {
-            final Audios data = Audios.fromJson(
-                snapshot.data!.data() as Map<String, dynamic>);
-            return ListView.builder(
-              itemCount: data.audios!.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(index.toString()),
-                  subtitle: Text(data.audios![index].audioName.toString()),
-                );
-              },
-            );
-          }
-        },
-      ),
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: firestore,
+      builder: (BuildContext context,
+          AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text('Error'),
+          );
+        } else {
+          //log(snapshot.data.runtimeType.toString());
+          final Audios data =
+              Audios.fromJson(snapshot.data!.data()! as Map<String, dynamic>);
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: data.audios!.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Align(
+                  //alignment: Alignment.center,
+                  child: Container(
+                    //padding: EdgeInsets.symmetric(vertical: 20),
+                    height: 80,
+                    width: 300,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.deepPurple),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              index.toString(),
+                              style: TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                            Text(
+                              data.audios![index].audioName.toString(),
+                              style: TextStyle(color: Colors.white, fontSize: 13,fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        IconButton(onPressed: () async{
+                          await _player.play(AssetSource('audio/sample.mp3'));
+                          log(data.audios![index].audioUrl.toString());
+                          //await _player.play(UrlSource(data.audios![index].audioUrl.toString()));
+                        }, icon: Icon(Icons.play_circle,color: Colors.white,size: 26,)),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        }
+      },
     );
   }
 }

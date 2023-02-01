@@ -24,4 +24,3 @@ class AudioModel {
     audioUrl = map["audioUrl"];
   }
 }
-

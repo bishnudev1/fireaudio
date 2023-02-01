@@ -21,12 +21,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: Text('Fire Audio'),
         ),
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-          child: SingleChildScrollView(
-            child: AudioScreen(),
-          ),
-        ),
+        body: AudioScreen(),
       )
     );
   }
