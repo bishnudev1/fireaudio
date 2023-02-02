@@ -23,7 +23,6 @@ class _AudioScreenState extends State<AudioScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -84,10 +83,19 @@ class _AudioScreenState extends State<AudioScreen> {
                           ],
                         ),
                         IconButton(onPressed: () async{
-                          await _player.play(AssetSource('audio/sample.mp3'));
-                          log(data.audios![index].audioUrl.toString());
-                          //await _player.play(UrlSource(data.audios![index].audioUrl.toString()));
+                          String url = data.audios![index].audioUrl.toString();
+                          log(url);
+                          await _player.play(UrlSource(url));
                         }, icon: Icon(Icons.play_circle,color: Colors.white,size: 26,)),
+                        IconButton(onPressed: (){
+                          _player.pause();
+                        }, icon: Icon(Icons.pause_circle,color: Colors.white,size: 26,)),
+                        IconButton(onPressed: (){
+                          _player.resume();
+                        }, icon: Icon(Icons.queue_play_next,color: Colors.white,size: 26,)),
+                        IconButton(onPressed: (){
+                          _player.stop();
+                        }, icon: Icon(Icons.stop,color: Colors.white,size: 26,)),
                       ],
                     ),
                   ),
