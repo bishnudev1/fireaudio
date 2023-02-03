@@ -46,7 +46,6 @@ class _AudioScreenState extends State<AudioScreen> {
             child: Text('Error'),
           );
         } else {
-          //log(snapshot.data.runtimeType.toString());
           final Audios data =
               Audios.fromJson(snapshot.data!.data()! as Map<String, dynamic>);
           return ListView.builder(
