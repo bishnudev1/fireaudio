@@ -14,11 +14,23 @@ class AudioScreen extends StatefulWidget {
 class _AudioScreenState extends State<AudioScreen> {
 
   late AudioPlayer _player;
+
+  final texts = {
+    3: 'Hi',
+    7: 'Welcome to Merkos Learn',
+    11: 'Sign Up Today to Learn',
+    15: 'And Give Your Feedback',
+  };
+
+  static const maximumDisplayTime = 1;
+  var displayText = '';
+  var lastShownSecond = -maximumDisplayTime - 1;
   
   @override
   void initState() {
     super.initState();
     _player = AudioPlayer();
+    _init();
   }
 
   @override
@@ -72,7 +84,7 @@ class _AudioScreenState extends State<AudioScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              index.toString(),
+                              displayText,
                               style: TextStyle(color: Colors.white, fontSize: 18),
                             ),
                             Text(
@@ -105,5 +117,21 @@ class _AudioScreenState extends State<AudioScreen> {
         }
       },
     );
+  }
+  Future _init() async{
+    _player.onPositionChanged.listen((event) {
+      final text = texts[event.inSeconds];
+      if(text != null){
+        setState(() {
+          displayText = text;
+          lastShownSecond = event.inSeconds;
+        });
+      }
+      else if(event.inSeconds - lastShownSecond >= maximumDisplayTime){
+        setState(() {
+          displayText = '';
+        });
+      }
+     });
   }
 }
