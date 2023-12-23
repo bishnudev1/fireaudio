@@ -6,6 +6,8 @@
 #include <windows.h>
 
 #include <iostream>
+//add new line 
+
 
 void CreateAndAttachConsole() {
   if (::AllocConsole()) {
